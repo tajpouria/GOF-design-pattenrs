@@ -2,4 +2,4 @@
 
 ## Table Of Contents
 
-### [ SOLID Principles ](https://github.com/tajpouria/GOFDesingPattenrs/tree/master/SOLIDPrinciples)
+### [ SOLID Principles ](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/SOLID_Principles)
