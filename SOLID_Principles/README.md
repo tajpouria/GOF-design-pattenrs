@@ -4,7 +4,7 @@ These principles, make it easy for a programmer to develop software that are eas
 
 ## Single responsibility principle
 
-### A software entities should have one, and only one reason to change
+### A class should have one, and only one reason to change
 
 You don’t need to limit your thinking to classes when considering the SRP. You can apply the principle to methods or modules, ensuring that they do just one thing and therefore have just one reason to change. In most of case using **separation of concern** term :
 
@@ -340,4 +340,82 @@ Object.assign(NewTurret.prototype, damageTracker);
 
 console.log(NewCharacter.prototype);
 console.log(NewTurret.prototype);
+```
+
+## Dependency inversion principle
+
+### High-level modules should not depend on low-level modules. Both should depend on abstractions (e.g. interfaces).
+
+### Abstractions should not depend on details. Details (concrete implementations) should depend on abstractions.
+
+./dependency_inversion_principle/Payment.ts
+
+```ts
+// bad Pattern
+
+class Stripe {
+  constructor(public userName: string) {}
+
+  applyPayment(cashInCent: number) {
+    console.info(`${this.userName} payed ${cashInCent}`);
+  }
+}
+
+class Paypal {
+  applyPayment(userName: string, cashInDollar: number) {
+    console.info(`${userName} payed ${cashInDollar}`);
+  }
+}
+
+class BadStore {
+  private stripe: Stripe;
+
+  private userName: string;
+  private paypal = new Paypal();
+
+  constructor(userName: string) {
+    this.stripe = new Stripe(userName);
+
+    this.userName = userName;
+  }
+
+  buyHamlet(quantity: number) {
+    this.stripe.applyPayment((quantity * 10) / 100);
+    this.paypal.applyPayment(this.userName, quantity * 10);
+  }
+}
+
+// right pattern
+
+class StripePaymentProcessor {
+  private stripe: Stripe;
+
+  constructor(private userName: string) {
+    this.stripe = new Stripe(userName);
+  }
+
+  pay(cash: number) {
+    this.stripe.applyPayment(cash / 100);
+  }
+}
+
+class PaypalPaymentProcessor {
+  private payPal = new Paypal();
+
+  constructor(private userName: string) {}
+
+  pay(cash: number) {
+    this.payPal.applyPayment(this.userName, cash);
+  }
+}
+
+class RightStore {
+  constructor(
+    private paymentProcessor: StripePaymentProcessor | PaypalPaymentProcessor,
+  ) {}
+
+  buyHamlet(quantity: number) {
+    this.paymentProcessor.pay(quantity & 10);
+  }
+}
 ```
