@@ -7,3 +7,5 @@ Creations patterns provide various object creation mechanisms, which increase fl
 - Wholesale (single statement) vs. piecewise (step-by-step)
 
 ### [ Builder ](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns/Builder)
+
+### [ Factories](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns/Factories)

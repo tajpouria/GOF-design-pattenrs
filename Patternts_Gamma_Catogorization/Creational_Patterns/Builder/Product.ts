@@ -1,3 +1,5 @@
+export {};
+
 interface Builder {
   producePartA(): Builder;
   producePartB(): Builder;
