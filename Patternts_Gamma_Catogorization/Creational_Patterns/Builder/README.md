@@ -10,6 +10,8 @@
 - Instead, opt for piecewise the contractor
 - Builder provides an API for constructing and object step-by-step
 
+**The Builder pattern can be recognized in class, which has a single creation method and several methods to configure the resulting object. Builder methods often support chaining (for example, someBuilder->setValueA(1)->setValueB(2)->create())**
+
 [ ./Users.ts ](./Users.ts)
 
 ```ts

@@ -13,6 +13,8 @@ Factory Method is a creational design pattern that provides an interface for cre
 
 The Factory Method pattern suggests that you replace direct object construction calls (using the new operator) with calls to a special factory method. Don’t worry: the objects are still created via the new operator, but it’s being called from within the factory method. Objects returned by a factory method are often referred to as “products.”
 
+**Factory-Method can be recognized by creation methods, which return object from concrete classes, but return them as objects of abstract type or interface**
+
 [./Creator.ts](./Factory_Method/Creator.ts)
 
 ```ts
@@ -209,3 +211,279 @@ console.info(phone);
 ```
 
 ## <a name="abstract"></a>Abstract Factory
+
+Abstract Factory is a creational design pattern that lets you produce families of related objects without specifying their concrete classes.
+
+![Abstract factory](https://refactoring.guru/images/patterns/content/abstract-factory/abstract-factory.png)
+
+**The pattern is easy to recognize by methods, which return a factory object; Then the factory object is used for creating specific sub-component**
+
+[./Abstract_Factory/Drink.ts](./Abstract_Factory/Drink.ts)
+
+```ts
+export {};
+
+interface HotDrink {
+  prepare(volume: number): string;
+}
+
+// A family of products _Drink_
+class Tea implements HotDrink {
+  prepare(volume: number) {
+    return `Take a teabag, boil water, pour ${volume} ml, add some lemon\n`;
+  }
+}
+
+class Coffee implements HotDrink {
+  prepare(volume: number) {
+    return `Grind some beans, boil water, pour ${volume}, ml, add cream, enjoy!\n`;
+  }
+}
+
+// Abstract factory
+interface HotDrinkFactory<T> {
+  make(): T;
+}
+
+// Corresponding factory
+class TeaFactory implements HotDrinkFactory<Tea> {
+  make(): HotDrink {
+    return new Tea();
+  }
+}
+
+class CoffeeFactory implements HotDrinkFactory<Coffee> {
+  make(): HotDrink {
+    return new Coffee();
+  }
+}
+
+enum HotDrinkType {
+  Tea,
+  Coffee,
+}
+
+class DrinkFactory {
+  private hotFactories = new Map<HotDrinkType, HotDrinkFactory<Tea | Coffee>>();
+
+  constructor() {
+    this.reset();
+  }
+
+  private reset() {
+    this.hotFactories.set(HotDrinkType.Tea, new TeaFactory());
+    this.hotFactories.set(HotDrinkType.Coffee, new CoffeeFactory());
+  }
+
+  makeDrink(hotDrinkType: HotDrinkType, volume: number) {
+    const drinkFactory = this.hotFactories.get(hotDrinkType);
+
+    if (drinkFactory) {
+      return drinkFactory.make().prepare(volume);
+    }
+  }
+}
+
+function clientCode() {
+  const df = new DrinkFactory();
+
+  const tea = df.makeDrink(HotDrinkType.Tea, 200);
+  const coffee = df.makeDrink(HotDrinkType.Coffee, 200);
+
+  console.info(tea, coffee);
+}
+
+clientCode();
+
+/**
+ * DrinkFactory{ makeDrink(drinkType) => TeaFactory{ make => Tea{ prepare } }       }
+ *             {                      => CoffeeFactory{ make => Coffee{ prepare } } }
+ */
+```
+
+[./Abstract_Factory/Product.ts](./Abstract_Factory/Product.ts)
+
+```ts
+export {};
+
+interface AbstractFactory {
+  createProductA(): AbstractProductA;
+  createProductB(): AbstractProductB;
+}
+
+class ConcreteFactory1 implements AbstractFactory {
+  createProductA(): AbstractProductA {
+    return new ConcreteProductA1();
+  }
+
+  createProductB(): AbstractProductB {
+    return new ConcreteProductB1();
+  }
+}
+
+class ConcreteFactory2 implements AbstractFactory {
+  createProductA(): AbstractProductA {
+    return new ConcreteProductA2();
+  }
+
+  createProductB(): AbstractProductB {
+    return new ConcreteProductB2();
+  }
+}
+
+interface AbstractProductA {
+  usefulFunctionA(): string;
+}
+
+class ConcreteProductA1 implements AbstractProductA {
+  usefulFunctionA() {
+    return "The result of product A1\n";
+  }
+}
+
+class ConcreteProductA2 implements AbstractProductA {
+  usefulFunctionA() {
+    return "The result of product A2\n";
+  }
+}
+
+interface AbstractProductB {
+  usefulFunctionB(): string;
+  anotherUsefulFunctionB(collaborator: AbstractProductA): string;
+}
+
+class ConcreteProductB1 implements AbstractProductB {
+  usefulFunctionB() {
+    return "The result of product B1\n";
+  }
+
+  anotherUsefulFunctionB(collaborator: AbstractProductA) {
+    const result = collaborator.usefulFunctionA();
+    return `The result of product B1 collaborating with ( ${result} )\n`;
+  }
+}
+
+class ConcreteProductB2 implements AbstractProductB {
+  usefulFunctionB() {
+    return "The result of product B2\n";
+  }
+
+  anotherUsefulFunctionB(collaborator: AbstractProductA) {
+    const result = collaborator.usefulFunctionA();
+    return `The result of product B2 collaborating with ( ${result} )\n`;
+  }
+}
+
+function clientCode(concreteFactory: AbstractFactory) {
+  const productA = concreteFactory.createProductA();
+  const productB = concreteFactory.createProductB();
+
+  console.info(
+    productA.usefulFunctionA(),
+    productB.usefulFunctionB(),
+    productB.anotherUsefulFunctionB(productA),
+  );
+}
+
+clientCode(new ConcreteFactory1());
+clientCode(new ConcreteFactory2());
+```
+
+[./Abstract_Factory/Car.ts](./Abstract_Factory/Car.ts)
+
+```ts
+namespace AbstractFactoryPattern {
+  interface ICar {
+    numberOfDoors: number;
+    start(): boolean;
+  }
+
+  interface ICarFactory {
+    make: string;
+    createCar(carType: CarType): ICar;
+  }
+
+  enum CarType {
+    Compact,
+    Convertible,
+  }
+
+  class FordCompactCar implements ICar {
+    numberOfDoors = 4;
+
+    start() {
+      return true;
+    }
+  }
+
+  class FordConvertibleCar implements ICar {
+    numberOfDoors = 2;
+
+    start() {
+      return true;
+    }
+  }
+
+  class RenaultCompactCar implements ICar {
+    numberOfDoors = 4;
+
+    start() {
+      return true;
+    }
+  }
+
+  class RenaultConvertibleCar implements ICar {
+    numberOfDoors = 2;
+
+    start() {
+      return true;
+    }
+  }
+
+  class FordCarFactory implements ICarFactory {
+    make = "Ford";
+
+    createCar(carType: CarType) {
+      switch (carType) {
+        case CarType.Compact:
+          return new FordCompactCar();
+
+        case CarType.Convertible:
+          return new FordConvertibleCar();
+      }
+    }
+  }
+
+  class RenaultCarFactory implements ICarFactory {
+    make = "Renault";
+
+    createCar(carType: CarType) {
+      switch (carType) {
+        case CarType.Compact:
+          return new RenaultCompactCar();
+
+        case CarType.Convertible:
+          return new RenaultConvertibleCar();
+      }
+    }
+  }
+
+  class CarFactoryProducer {
+    static getCarFactory(make: string) {
+      switch (make) {
+        case "Ford":
+          return new FordCarFactory();
+
+        case "Renault":
+          return new RenaultCarFactory();
+      }
+    }
+  }
+
+  namespace userCode {
+    const fordFactory = CarFactoryProducer.getCarFactory("Ford");
+
+    fordFactory?.createCar(CarType.Compact);
+  }
+}
+```
