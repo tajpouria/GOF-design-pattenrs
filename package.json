@@ -8,6 +8,7 @@
     "typescript": "^3.7.5"
   },
   "scripts": {
-    "ts-node": "ts-node"
+    "ts-node": "ts-node",
+    "start": "tsc -w"
   }
 }

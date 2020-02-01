@@ -1,6 +1,6 @@
 # Builder
 
-## When piecewise object construction is complicated, provide and API for doing it succinctly
+### When piecewise object construction is complicated, provide and API for doing it succinctly
 
 ![Builder pattern](https://refactoring.guru/images/patterns/content/builder/builder.png)
 
