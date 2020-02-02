@@ -2,6 +2,8 @@
 
 ### [ SOLID Principles ](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/SOLID_Principles)
 
+### [](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Sundry)
+
 ### Design patterns based on _Gamma categorization_
 
 ### [ Creational patterns ](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns)

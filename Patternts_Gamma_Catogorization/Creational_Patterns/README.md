@@ -11,3 +11,5 @@ Creations patterns provide various object creation mechanisms, which increase fl
 ### [ Factories](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns/Factories)
 
 ### [ Prototype](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns/Prototype)
+
+### [ Singleton ](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns/Singleton)
