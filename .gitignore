@@ -52,3 +52,7 @@ out
 # Stores VSCode versions used for testing VSCode extensions
 .vscode
 .vscode-test
+
+# cs stuff
+csImplementation/bin/
+csImplementation/obj/
