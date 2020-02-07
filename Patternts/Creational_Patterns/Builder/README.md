@@ -4,13 +4,9 @@
 
 ![Builder pattern](https://refactoring.guru/images/patterns/content/builder/builder.png)
 
-- Some object are simple and can created in a single constructor call
-- Other objects require lot of ceremony it no to create
-- Having an object with 10 constructor arguments is not productive
-- Instead, opt for piecewise the contractor
-- Builder provides an API for constructing and object step-by-step
-
 **The Builder pattern can be recognized in class, which has a single creation method and several methods to configure the resulting object. Builder methods often support chaining (for example, someBuilder->setValueA(1)->setValueB(2)->create())**
+
+## Regular Fluent Builder
 
 [ ./Users.ts ](./Users.ts)
 
@@ -69,34 +65,79 @@ class newUser {
 }
 ```
 
-[ ./HTMLBuilder.ts ](./HTMLBuilder.ts)
+[ ./HTMLBuilder2.ts ](./HTMLBuilder2.ts)
 
 ```ts
-class HTMLBuilder {
-  private children: [string, string][] = [];
-
-  constructor(private rootElementName: string) {}
-
-  addChild(childName: string, childContent: string) {
-    this.children.push([childName, childContent]); // Fluent Builder
+namespace htmlBuilder2 {
+  function space(times = 1): string {
+    const sp = " ";
+    return sp.repeat(times);
   }
 
-  get str() {
-    return `
-    <${this.rootElementName}>
-      ${this.children.map(
-        ([childName, childContent]) =>
-          `<${childName}>${childContent}</${childName}>`,
-      )} 
-    </${this.rootElementName}>
-    `;
+  class HTMLElement {
+    public name = " ";
+    public text = " ";
+    public indentSize = 2;
+    public elements: Array<HTMLElement> = [];
+
+    public toString(indent: number): string {
+      const { name, text, elements, indentSize } = this;
+
+      const res = [];
+
+      const tarIndent = indent * indentSize;
+
+      res.push(space(tarIndent));
+      res.push(`<${name}>\n`);
+
+      if (text?.trim()) {
+        res.push(space(tarIndent));
+        res.push(`${text}\n`);
+      }
+
+      if (elements.length) res.push(elements.map(e => e.toString(indent + 1)));
+
+      res.push(space(tarIndent));
+      res.push(`</${name}>\n`);
+
+      return res.join("");
+    }
+
+    public appendChild(element: HTMLElement): void {
+      this.elements.push(element);
+    }
   }
+
+  class HTMLBuilder {
+    private _root = new HTMLElement();
+    constructor(private rootName: string) {
+      this.clear();
+      this._root.name = rootName;
+    }
+
+    public appendChild(childName: string, childText: string): HTMLBuilder {
+      const ele = new HTMLElement();
+      ele.name = childName;
+      ele.text = childText;
+
+      this._root.appendChild(ele);
+
+      return this;
+    }
+
+    public toString(): string {
+      return this._root.toString(0);
+    }
+
+    public clear(): void {
+      this._root = new HTMLElement();
+    }
+  }
+
+  const hbl = new HTMLBuilder("ul");
+  hbl.appendChild("li", "foo").appendChild("li", "bar");
+  console.log(hbl.toString());
 }
-
-const htmlBuilder = new HTMLBuilder("ul");
-htmlBuilder.addChild("li", "foo").addChild("li", "bar");
-
-console.log(htmlBuilder.str);
 ```
 
 [./Product.ts](./Product.ts)
@@ -186,4 +227,204 @@ function clientCode(director: Director) {
 }
 
 clientCode(new Director());
+```
+
+## Fluent Builder Inheritance
+
+[./FluentBuilderInheritance.ts](./FluentBuilderInheritance.ts)
+
+```ts
+namespace fluentBuilderInheritance {
+  class Person {
+    public name?: string;
+    public position?: string;
+
+    public static New = () => new Builder();
+
+    public toString(): string {
+      return `Name: ${this.name}, Position: ${this.position}`;
+    }
+  }
+
+  abstract class PersonBuilder {
+    protected person = new Person();
+
+    public build(): Person {
+      return this.person;
+    }
+  }
+
+  class PersonInfoBuilder<
+    SELF extends PersonInfoBuilder<SELF>
+  > extends PersonBuilder {
+    protected person = new Person();
+
+    public called(name: string): SELF {
+      this.person.name = name;
+
+      return (this as unknown) as SELF;
+    }
+  }
+
+  class PersonJobBuilder<
+    SELF extends PersonJobBuilder<SELF>
+  > extends PersonInfoBuilder<PersonJobBuilder<SELF>> {
+    public worksAt(position: string): SELF {
+      this.person.position = position;
+
+      return (this as unknown) as SELF;
+    }
+  }
+
+  class Builder extends PersonJobBuilder<Builder> {}
+
+  const prs = Person.New()
+    .called("Bar")
+    .worksAt("foo")
+    .build();
+
+  console.log(prs.toString());
+}
+```
+
+### Functional Builder
+
+[./FunctionalBuilder.ts](./FunctionalBuilder.ts)
+
+```ts
+namespace funcBuilder {
+  class Person {
+    public name?: string;
+    public position?: string;
+
+    public toString() {
+      return `Name: ${this.name}, Position: ${this.position}`;
+    }
+  }
+
+  type Action = (p: Person) => void;
+
+  class PersonBuilder {
+    private person = new Person();
+
+    private actions: Array<Action> = [];
+
+    public addAction(action: Action): void {
+      this.actions.push(action);
+    }
+
+    public build(): Person {
+      this.actions.forEach(a => a(this.person));
+
+      return this.person;
+    }
+  }
+
+  class PersonNameModExtension {
+    public static called(builder: PersonBuilder, name: string) {
+      builder.addAction(p => {
+        p.name = name;
+      });
+    }
+  }
+
+  class PersonJobModExtension {
+    public static worksAt(builder: PersonBuilder, position: string) {
+      builder.addAction(p => {
+        p.position = position;
+      });
+    }
+  }
+
+  const pb = new PersonBuilder();
+
+  PersonJobModExtension.worksAt(pb, "Bar");
+  PersonNameModExtension.called(pb, "Foo");
+
+  const per = pb.build();
+
+  console.log(per.toString());
+}
+```
+
+## Facade Builder
+
+[./FacadeBuilder.ts](./FacadeBuilder.ts)
+
+```ts
+namespace facadeBuilder {
+  class Person {
+    public position?: string;
+    public annualIncome?: number;
+
+    public city?: string;
+    public postalCode?: string;
+
+    toString(): string {
+      return `position: ${this.position}, annualIncome: ${this.annualIncome}, city: ${this.city}, postalCode: ${this.postalCode}`;
+    }
+  }
+
+  // Facade
+  class PersonBuilder {
+    // ref
+    protected _person = new Person();
+
+    public get person(): Person {
+      return this._person;
+    }
+
+    public get job(): JobBuilder {
+      return new JobBuilder(this.person);
+    }
+
+    public get address(): AddressBuilder {
+      return new AddressBuilder(this.person);
+    }
+  }
+
+  class JobBuilder extends PersonBuilder {
+    constructor(person: Person) {
+      super();
+      this._person = person;
+    }
+
+    public as(position: string): JobBuilder {
+      this._person.position = position;
+      return this;
+    }
+
+    public with(annualIncome: number): JobBuilder {
+      this._person.annualIncome = annualIncome;
+      return this;
+    }
+  }
+
+  class AddressBuilder extends PersonBuilder {
+    constructor(person: Person) {
+      super();
+      this._person = person;
+    }
+
+    public city(city: string): AddressBuilder {
+      this._person.city = city;
+      return this;
+    }
+
+    public postalCode(pc: string): AddressBuilder {
+      this._person.postalCode = pc;
+      return this;
+    }
+  }
+
+  const pb = new PersonBuilder();
+
+  pb.job
+    .as("SD")
+    .with(100000000000)
+    .address.city("NW")
+    .postalCode("123W");
+
+  console.log(pb.person.toString());
+}
 ```

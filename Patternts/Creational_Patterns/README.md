@@ -6,10 +6,10 @@ Creations patterns provide various object creation mechanisms, which increase fl
 - Explicit (constructor) vs. implicit (dependency injection frameWorks, reflection, etc.)
 - Wholesale (single statement) vs. piecewise (step-by-step)
 
-### [ Builder ](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns/Builder)
+### [ Builder ](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts/Creational_Patterns/Builder)
 
-### [ Factories](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns/Factories)
+### [ Factories](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts/Creational_Patterns/Factories)
 
-### [ Prototype](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns/Prototype)
+### [ Prototype](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts/Creational_Patterns/Prototype)
 
-### [ Singleton ](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts_Gamma_Catogorization/Creational_Patterns/Singleton)
+### [ Singleton ](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts/Creational_Patterns/Singleton)

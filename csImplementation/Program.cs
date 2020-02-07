@@ -1,4 +1,6 @@
-﻿namespace csImplementation
+﻿using System;
+
+namespace csImplementation
 {
     class Program
     {
