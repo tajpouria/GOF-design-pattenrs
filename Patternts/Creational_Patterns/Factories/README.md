@@ -2,8 +2,52 @@
 
 A component responsible for solely the wholesale(not piecewise) creation of object
 
+- [Factory](#fac)
 - [Factory Method](#method)
 - [Abstract Factory](#abstract)
+
+## <a name="fac"></a>Factory
+
+```ts
+namespace point2 {
+  class Point {
+    constructor(private x: number, private y: number) {}
+  }
+
+  class PointFactory {
+    public static newCartesianPoint(x: number, y: number): Point {
+      return new Point(x, y);
+    }
+
+    public static newPolarPoint(rho: number, theta: number): Point {
+      return new Point(rho * Math.cos(theta), rho * Math.sin(theta));
+    }
+  }
+
+  const cp = PointFactory.newCartesianPoint(1, 2);
+  const pp = PointFactory.newPolarPoint(1, 2);
+}
+
+// Refactoring in order to use private constructor
+namespace point2 {
+  class Point {
+    private constructor(private x: number, private y: number) {}
+
+    static Factory = class Factory {
+      public static newCartesianPoint(x: number, y: number): Point {
+        return new Point(x, y);
+      }
+
+      public static newPolarPoint(rho: number, theta: number): Point {
+        return new Point(rho * Math.cos(theta), rho * Math.sin(theta));
+      }
+    };
+  }
+
+  const cp = Point.Factory.newCartesianPoint(1, 2);
+  const pp = Point.Factory.newPolarPoint(1, 2);
+}
+```
 
 ## <a name="method"></a>Factory Method
 
@@ -14,6 +58,57 @@ Factory Method is a creational design pattern that provides an interface for cre
 The Factory Method pattern suggests that you replace direct object construction calls (using the new operator) with calls to a special factory method. Don’t worry: the objects are still created via the new operator, but it’s being called from within the factory method. Objects returned by a factory method are often referred to as “products.”
 
 **Factory-Method can be recognized by creation methods, which return object from concrete classes, but return them as objects of abstract type or interface**
+
+[./Point.ts](./Factory_Method/Point.ts)
+
+```ts
+/* 
+  Create a class responsible to creating either cartesian or polar point
+  Without factory method 
+*/
+class Point {
+  public x?: number;
+  public y?: number;
+
+  public rho?: number;
+  public theta?: number;
+
+  constructor(
+    a: number,
+    b: number,
+    public pointType: PointTypeEnum = PointTypeEnum.cartesian,
+  ) {
+    if (pointType === PointTypeEnum.cartesian) {
+      this.x = a;
+      this.y = b;
+    } else {
+      this.rho = a * Math.cos(b);
+      this.theta = b * Math.sin(a);
+    }
+  }
+}
+
+enum PointTypeEnum {
+  cartesian,
+  polar,
+}
+
+// With factory method pattern ./Point2.ts
+class Point {
+  private constructor(private x: number, private y: number) {}
+
+  public static newCartesianPoint(x: number, y: number): Point {
+    return new Point(x, y);
+  }
+
+  public static newPolarPoint(rho: number, theta: number): Point {
+    return new Point(rho * Math.cos(theta), rho * Math.sin(theta));
+  }
+}
+
+const cp = Point.newCartesianPoint(1, 2);
+const pp = Point.newPolarPoint(1, 2);
+```
 
 [./Creator.ts](./Factory_Method/Creator.ts)
 
@@ -65,58 +160,6 @@ function clientCode(creator: Creator) {
 clientCode(new ConcreteCreator1());
 
 clientCode(new ConcreteCreator2());
-```
-
-[./Point.ts](./Factory_Method/Point.ts)
-
-```ts
-/* 
-  Create a class responsible to creating either cartesian or polar point
-  Without factory method 
-*/
-class Point {
-  public x?: number;
-  public y?: number;
-
-  public rho?: number;
-  public theta?: number;
-
-  constructor(
-    a: number,
-    b: number,
-    public pointType: PointTypeEnum = PointTypeEnum.cartesian,
-  ) {
-    if (pointType === PointTypeEnum.cartesian) {
-      this.x = a;
-      this.y = b;
-    } else {
-      this.rho = a * Math.cos(b);
-      this.theta = b * Math.sin(a);
-    }
-  }
-}
-
-enum PointTypeEnum {
-  cartesian,
-  polar,
-}
-
-// With factory method pattern
-class PointFactory {
-  public x?: number;
-  public y?: number;
-
-  public rho?: number;
-  public theta?: number;
-
-  newCartesianPoint(x: number, y: number) {
-    (this.x = x), (this.y = y);
-  }
-
-  newPolarPoint(rho: number, theta: number) {
-    (this.rho = rho), (this.theta = theta);
-  }
-}
 ```
 
 [./Person.ts](./Factory_Method/Person.ts)
@@ -208,6 +251,30 @@ const phoneFactory = new PhoneConcreteFactory();
 const phone = phoneFactory.getObject();
 
 console.info(phone);
+```
+
+## Async Factory method
+
+```ts
+namespace asyncFactory {
+  class Foo {
+    private constructor() {}
+
+    public toString() {
+      return "Successfully initialized";
+    }
+
+    public static async init(): Promise<Foo> {
+      return new Promise(resolve =>
+        setTimeout(() => {
+          return resolve(new Foo());
+        }, 1000),
+      );
+    }
+  }
+
+  Foo.init().then(res => console.log(res.toString()));
+}
 ```
 
 ## <a name="abstract"></a>Abstract Factory

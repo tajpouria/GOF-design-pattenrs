@@ -30,18 +30,17 @@ enum PointTypeEnum {
 }
 
 // With factory method pattern
-class PointFactory {
-  public x?: number;
-  public y?: number;
+class Point2 {
+  private constructor(private x: number, private y: number) {}
 
-  public rho?: number;
-  public theta?: number;
-
-  newCartesianPoint(x: number, y: number) {
-    (this.x = x), (this.y = y);
+  public static newCartesianPoint(x: number, y: number): Point {
+    return new Point(x, y);
   }
 
-  newPolarPoint(rho: number, theta: number) {
-    (this.rho = rho), (this.theta = theta);
+  public static newPolarPoint(rho: number, theta: number): Point {
+    return new Point(rho * Math.cos(theta), rho * Math.sin(theta));
   }
 }
+
+const cp = Point2.newCartesianPoint(1, 2);
+const pp = Point2.newPolarPoint(1, 2);
