@@ -32,7 +32,7 @@ namespace hotDrinkAbstractFactory {
   }
 
   class HotDrinkAbstractFactory {
-    static availableDrinks = { Tea, Coffee };
+    static availableDrinks = { Tea: TeaFactory, Coffee: CoffeeFactory };
 
     private factories = new Map();
 
@@ -48,7 +48,8 @@ namespace hotDrinkAbstractFactory {
 
     makeDrink(drink: string): IHotDrink {
       const res = this.factories.get(drink);
-      return res.prepare();
+      const fac = new res();
+      return fac.prepare();
     }
   }
 
