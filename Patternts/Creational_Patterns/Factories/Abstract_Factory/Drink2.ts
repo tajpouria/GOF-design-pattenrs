@@ -43,7 +43,6 @@ namespace hotDrinkAbstractFactory {
           // @ts-ignore
           HotDrinkAbstractFactory.availableDrinks[drink],
         );
-      debugger;
       });
     }
 
