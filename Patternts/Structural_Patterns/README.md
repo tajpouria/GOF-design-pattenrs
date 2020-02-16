@@ -9,3 +9,5 @@ Structural patterns explain how to assemble objects and classes into larger stru
 ### [ Adapter](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts/Structural_Patterns/Adapter)
 
 ### [ Bridge](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts/Structural_Patterns/Bridge)
+
+### [ Composite](https://github.com/tajpouria/GOF-design-pattenrs/tree/master/Patternts/Structural_Patterns/Composite)
