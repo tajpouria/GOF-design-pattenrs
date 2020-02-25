@@ -575,3 +575,123 @@ namespace deepCopyFunc {
   console.log(c.greet);
 }
 ```
+
+### AsyncIterator
+
+```ts
+const range = {
+  from: 0,
+  to: 10,
+
+  // iterator next() should return { value: any, done: boolean }
+  [Symbol.iterator]() {
+    return {
+      current: this.from,
+      last: this.to,
+      next() {
+        if (this.current <= this.last) {
+          return { done: false, value: this.current++ };
+        } else {
+          return { done: true };
+        }
+      },
+    };
+  },
+};
+
+for (let i of range) {
+  console.log(i); // 1, 2, 3, ...
+}
+
+const range = {
+  from: 0,
+  to: 10,
+
+  // async iterator next() should return a Promise<{ value: any, done: boolean }>
+  [Symbol.asyncIterator]() {
+    return {
+      current: this.from,
+      last: this.to,
+
+      async next() {
+        await new Promise(resolve => setTimeout(resolve, 1000));
+
+        if (this.current <= this.last) {
+          return { done: false, value: this.current++ };
+        } else {
+          return { done: true };
+        }
+      },
+    };
+  },
+};
+
+(async () => {
+  for await (let i of range) {
+    console.log(i);
+  }
+})();
+```
+
+### AsyncGenerator
+
+```ts
+async function* asyncIterator(start: number, end: number) {
+  for (let index = start; index <= end; index++) {
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    yield index;
+  }
+}
+
+(async () => {
+  const gen = asyncIterator(1, 5);
+  for (let i = 1; i < 5; i++) {
+    const n = await gen.next();
+    console.log(n);
+    // Object {value: 1, done: false}
+    // Object {value: 2, done: false}
+    // Object {value: 3, done: false}
+    // Object {value: 4, done: false}
+  }
+})();
+```
+
+### Common practices
+
+```ts
+// 0
+const range = {
+  from: 0,
+  to: 10,
+
+  *[Symbol.iterator]() {
+    for (let index = this.from; index < this.to; index++) {
+      yield index;
+    }
+  },
+};
+
+for (let iterator of range) {
+  console.log(iterator);
+}
+
+// 1
+const range = {
+  from: 0,
+  to: 10,
+
+  async *[Symbol.asyncIterator]() {
+    for (let index = this.from; index < this.to; index++) {
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      yield index;
+    }
+  },
+};
+
+(async () => {
+  for await (let iterator of range) {
+    console.log(iterator);
+  }
+})();
+```

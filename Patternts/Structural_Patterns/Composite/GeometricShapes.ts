@@ -13,7 +13,7 @@ namespace geometricShape {
       sb += `${this.color} ${this.name}\n`;
 
       for (let child of this.children) {
-        sb += child.print('', depth + 1);
+        sb += child.print("", depth + 1);
       }
 
       return sb;
