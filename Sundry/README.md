@@ -695,3 +695,79 @@ const range = {
   }
 })();
 ```
+
+### XState
+
+https://codesandbox.io/s/snowy-dew-zt4jo
+
+```ts
+import React from "react";
+import "./styles.css";
+import { Machine, assign } from "xstate";
+import { useMachine } from "@xstate/react";
+
+const stateMachine = Machine({
+  initial: "idle",
+  context: {
+    msg: "Nothing goings on so far...",
+  },
+  states: {
+    idle: {
+      on: {
+        SUBMIT: [
+          { target: "loading", cond: (context, event) => event.data },
+          { target: "error" },
+        ],
+      },
+    },
+    loading: {
+      invoke: {
+        id: "doPayment",
+        src: () =>
+          new Promise((resolve, reject) =>
+            setTimeout(() => resolve("Yay"), 2500),
+          ),
+        onDone: {
+          target: "success",
+          actions: assign({ msg: (context, event) => event.data }),
+        },
+        onError: { target: "error" },
+        actions: assign({ msg: (context, event) => event.data }),
+      },
+    },
+    success: {
+      type: "final",
+    },
+    error: {
+      on: {
+        SUBMIT: [{ target: "loading", cond: (context, event) => event.data }],
+      },
+    },
+  },
+});
+
+export default function App() {
+  const [current, send] = useMachine(stateMachine);
+  const [card, setCard] = React.useState("");
+
+  return (
+    <div className="App">
+      <h1>{current.value}</h1>
+      <h2>{current.context.msg}</h2>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          send({ type: "SUBMIT", data: card });
+        }}
+      >
+        <input
+          placeholder="Card"
+          value={card}
+          onChange={e => setCard(e.target.value)}
+        />
+        <button type="submit">Submit</button>
+      </form>
+    </div>
+  );
+}
+```
