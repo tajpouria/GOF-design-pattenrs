@@ -771,3 +771,5 @@ export default function App() {
   );
 }
 ```
+#### UML notation summary
+http://umich.edu/~eecs381/handouts/UMLNotationSummary.pdf
